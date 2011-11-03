@@ -1,3 +1,6 @@
 require "veritas"
 require "veritas-td/version"
+require "veritas-td/atoms/case_insensitive_str"
+require "veritas-td/parser"
+require "veritas-td/transform"
 require "veritas-td/interpreter"
