@@ -108,4 +108,21 @@ describe "evaluating an arithmetic expression" do
       end
     end
   end
+
+  describe "logical grouping" do
+    let(:expr) { "3 * (2 + 2)" }
+
+    it "evaluates the parenthesized expression first" do
+      result.should == 12
+    end
+  end
+
+  describe "mixed grouping" do
+    let(:expr) { "3 * (2 + 2) - 1" }
+
+    it "can be parsed" do
+      pending "doesn't parse; will come back to this"
+      result.should == 11
+    end
+  end
 end

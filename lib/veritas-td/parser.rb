@@ -35,19 +35,26 @@ module Veritas
       rule(:subtract)    { (operand.as(:left) >> padded("-") >> expr.as(:right)).as(:subtract) }
       rule(:multiply)    { (operand.as(:left) >> padded("*") >> expr.as(:right)).as(:multiply) }
       rule(:divide)      { (operand.as(:left) >> padded("/") >> expr.as(:right)).as(:divide) }
-
       rule(:binary_expr) { multiply | divide | sum | subtract }
 
       rule(:operand) { scalar | expr }
 
       # Complex expressions
-      rule(:expr) { padded(binary_expr | unary_expr | scalar) }
+      rule(:expr) { parenthesized(expr) | padded(binary_expr | unary_expr | scalar) }
 
       # Full user input (currently single expressions only)
       rule(:prog) { expr | noop }
 
       # Top-level element is any possible expression
       root(:prog)
+
+      # The parse method is overloaded to transform the tree and left-associate
+      # branches that are incorrectly right-associated by default
+      #
+      # Note that Parslet does not support left-associative grammars
+      def parse(input)
+        reassociate(super)
+      end
 
       private
 
@@ -58,6 +65,15 @@ module Veritas
       def padded(other)
         other = str(other) unless Parslet::Atoms::Base === other
         wsp? >> other >> wsp?
+      end
+
+      def parenthesized(other)
+        (padded("(") >> other >> padded(")")).as(:parenthesized)
+      end
+
+      def reassociate(tree)
+        @associativity ||= Associativity.new
+        @associativity.apply(tree)
       end
     end
   end

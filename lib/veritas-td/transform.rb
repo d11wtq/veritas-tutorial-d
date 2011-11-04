@@ -12,6 +12,9 @@ module Veritas
       rule(:chars => simple(:chars))       { chars }
       rule(:string => sequence(:chunks))   { chunks.join }
 
+      # Logical grouping
+      rule(:parenthesized => subtree(:expr)) { expr }
+
       # +expr and -expr
       rule(:minus => simple(:minus), :value => simple(:value)) { -value }
       rule(:plus  => simple(:minus), :value => simple(:value)) { value }
