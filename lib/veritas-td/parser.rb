@@ -39,7 +39,16 @@ module Veritas
       rule(:operand)     { scalar | expr }
 
       # Relations
-      rule(:relation)    { (ci_str("RELATION") >> padded("{") >> padded("}")).as(:relation) }
+      rule(:table_dee) { ci_str("TABLE_DEE").as(:table_dee) }
+      rule(:table_dum) { ci_str("TABLE_DUM").as(:table_dum) }
+      rule(:relation)  do
+        (ci_str("RELATION") >> padded("{") >> tuple.repeat >> padded("}")).as(:relation) |
+          table_dee |
+          table_dum
+      end
+
+      # Tuples
+      rule(:tuple) { (ci_str("TUPLE") >> padded("{") >> padded("}")).as(:tuple) }
 
       # Complex expressions
       rule(:expr) { parenthesized(expr) | padded(unary_expr | binary_expr | scalar) }

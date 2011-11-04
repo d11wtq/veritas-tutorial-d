@@ -25,8 +25,16 @@ module Veritas
       rule(:multiply => { :left => simple(:left), :right => simple(:right) }) { left * right }
       rule(:divide   => { :left => simple(:left), :right => simple(:right) }) { Float(left) / right }
 
+      # TABLE_DEE / TABLE_DUM
+      rule(:table_dee => simple(:dee)) { Veritas::TABLE_DEE }
+      rule(:table_dum => simple(:dum)) { Veritas::TABLE_DUM }
+
       # RELATION { .. }
-      rule(:relation => subtree(:tuples)) { Veritas::Relation.new([], []) }
+      rule(:relation => simple(:empty))   { Veritas::Relation.new([], []) }
+      rule(:relation => subtree(:tuples)) { Veritas::Relation.new([], [tuples]) }
+
+      # TUPLE { .. }
+      rule(:tuple => subtree(:components)) { [] }
     end
   end
 end
