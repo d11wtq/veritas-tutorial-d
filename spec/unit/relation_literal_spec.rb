@@ -4,7 +4,7 @@ describe "evaluating a relation literal" do
   let(:td)       { Veritas::TD::Interpreter.new }
   let(:relation) { td.eval expr }
 
-  context "for an empty relation" do
+  context "with no attributes or tuples" do
     let(:expr) { "RELATION {}" }
 
     it "returns TABLE_DUM" do
@@ -12,11 +12,20 @@ describe "evaluating a relation literal" do
     end
   end
 
-  context "for an attributeless relation with one tuple" do
+  context "with no attribites and one tuple" do
     let(:expr) { "RELATION { TUPLE {} }" }
 
     it "returns TABLE_DEE" do
       relation.should == Veritas::TABLE_DEE
+    end
+  end
+
+  context "with one attribute and one tuple" do
+    let(:expr) { "RELATION { TUPLE { ID 20 } }" }
+
+    it "returns a relation with the same tuple" do
+      relation.header.should == [ [:ID, Integer] ]
+      relation.should == Veritas::Relation.new([ [:ID, Integer] ], [ [20] ])
     end
   end
 
