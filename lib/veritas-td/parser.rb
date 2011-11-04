@@ -23,12 +23,25 @@ module Veritas
       rule(:dq_str)       { str('"') >> dq_str_body >> str('"') }
       rule(:string)       { (sq_str | dq_str).as(:string) }
 
-      # Unary Expressions
+      # Scalar types
+      rule(:scalar) { int | string }
+
+      # Unary expressions
       rule(:unary_op)   { padded(str("-").as(:minus) | str("+").as(:plus)) }
       rule(:unary_expr) { unary_op >> int.as(:value) }
 
+      # Binary expressions
+      rule(:sum)         { (operand.as(:left) >> padded("+") >> expr.as(:right)).as(:sum) }
+      rule(:subtract)    { (operand.as(:left) >> padded("-") >> expr.as(:right)).as(:subtract) }
+      rule(:multiply)    { (operand.as(:left) >> padded("*") >> expr.as(:right)).as(:multiply) }
+      rule(:divide)      { (operand.as(:left) >> padded("/") >> expr.as(:right)).as(:divide) }
+
+      rule(:binary_expr) { multiply | divide | sum | subtract }
+
+      rule(:operand) { scalar | expr }
+
       # Complex expressions
-      rule(:expr) { padded(unary_expr | int | string) }
+      rule(:expr) { padded(binary_expr | unary_expr | scalar) }
 
       # Full user input (currently single expressions only)
       rule(:prog) { expr | noop }
@@ -43,6 +56,7 @@ module Veritas
       end
 
       def padded(other)
+        other = str(other) unless Parslet::Atoms::Base === other
         wsp? >> other >> wsp?
       end
     end
