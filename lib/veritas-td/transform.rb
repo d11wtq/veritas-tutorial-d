@@ -24,6 +24,9 @@ module Veritas
       rule(:subtract => { :left => simple(:left), :right => simple(:right) }) { left - right }
       rule(:multiply => { :left => simple(:left), :right => simple(:right) }) { left * right }
       rule(:divide   => { :left => simple(:left), :right => simple(:right) }) { Float(left) / right }
+
+      # RELATION { .. }
+      rule(:relation => subtree(:tuples)) { Veritas::Relation.new([], []) }
     end
   end
 end

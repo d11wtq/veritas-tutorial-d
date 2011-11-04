@@ -36,14 +36,16 @@ module Veritas
       rule(:multiply)    { (operand.as(:left) >> padded("*") >> expr.as(:right)).as(:multiply) }
       rule(:divide)      { (operand.as(:left) >> padded("/") >> expr.as(:right)).as(:divide) }
       rule(:binary_expr) { multiply | divide | sum | subtract }
+      rule(:operand)     { scalar | expr }
 
-      rule(:operand) { scalar | expr }
+      # Relations
+      rule(:relation)    { (ci_str("RELATION") >> padded("{") >> padded("}")).as(:relation) }
 
       # Complex expressions
       rule(:expr) { parenthesized(expr) | padded(unary_expr | binary_expr | scalar) }
 
       # Full user input (currently single expressions only)
-      rule(:prog) { noop | expr }
+      rule(:prog) { noop | relation | expr }
 
       # Top-level element is any possible expression
       root(:prog)
