@@ -4,7 +4,7 @@ module Veritas
   module TD
     class Parser < Parslet::Parser
       # Whitespace
-      rule(:wsp)  { match('\s').repeat }
+      rule(:wsp)  { match('\s').repeat(1) }
       rule(:wsp?) { wsp.maybe }
 
       # No-ops
@@ -40,10 +40,10 @@ module Veritas
       rule(:operand) { scalar | expr }
 
       # Complex expressions
-      rule(:expr) { parenthesized(expr) | padded(binary_expr | unary_expr | scalar) }
+      rule(:expr) { parenthesized(expr) | padded(unary_expr | binary_expr | scalar) }
 
       # Full user input (currently single expressions only)
-      rule(:prog) { expr | noop }
+      rule(:prog) { noop | expr }
 
       # Top-level element is any possible expression
       root(:prog)

@@ -19,17 +19,11 @@ module Veritas
       rule(:minus => simple(:minus), :value => simple(:value)) { -value }
       rule(:plus  => simple(:minus), :value => simple(:value)) { value }
 
-      # a + b
-      rule(:sum => { :left => simple(:left), :right => simple(:right) }) { left + right }
-
-      # a - b
+      # a + b - c * d / e
+      rule(:sum      => { :left => simple(:left), :right => simple(:right) }) { left + right }
       rule(:subtract => { :left => simple(:left), :right => simple(:right) }) { left - right }
-
-      # a * b
       rule(:multiply => { :left => simple(:left), :right => simple(:right) }) { left * right }
-
-      # a / b
-      rule(:divide => { :left => simple(:left), :right => simple(:right) }) { Float(left) / right }
+      rule(:divide   => { :left => simple(:left), :right => simple(:right) }) { Float(left) / right }
     end
   end
 end
