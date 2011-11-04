@@ -30,10 +30,11 @@ module Veritas
       # Complex expressions
       rule(:expr) { padded(unary_expr | int | string) }
 
-      rule(:root_expr) { expr | noop }
+      # Full user input (currently single expressions only)
+      rule(:prog) { expr | noop }
 
       # Top-level element is any possible expression
-      root(:root_expr)
+      root(:prog)
 
       private
 
