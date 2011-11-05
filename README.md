@@ -24,9 +24,9 @@ to work in the current state, but work is underway to build up the interpreter.
 
 ## Example Usage
 
-Currently the only thing that's working is building a Relation literal with *one*
-attribute and *one* tuple.  Possibily by the time you read this support for multiple
-tuples and attributes will have been added.
+Unless you want to use the interpreter as a glorified infix calculator, the current
+progress means all you can really do is create `Veritas::Relation` objects of the
+form:
 
 ``` ruby
 require "veritas-tutorial-d"
@@ -39,6 +39,8 @@ QUERY
 
 rel.each { |tuple| p tuple[:UNO] }
 ```
+
+Check back regularly for updates as more of the grammar is implemented.
 
 ## Development Strategy
 
