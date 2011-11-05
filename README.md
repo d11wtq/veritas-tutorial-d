@@ -95,3 +95,10 @@ RELATION { UNO UNO, UNAME CHAR }
 ## TODO
 
   - Rename `#eval` to `#execute`?
+
+## Known Issues
+
+This represents a single day's work (if you count the fact I deleted everything and started over),
+there some major issues I need to address, most notably some inputs cause 'Stack Level Too Deep'
+instead of causing a parse error.  This should be easy to fix with some rule re-adjustment to
+cut out whereever the recursion is occuring.
