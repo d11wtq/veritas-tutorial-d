@@ -44,6 +44,9 @@ module Veritas
       rule(:tuple => subtree(:components))  { components }
       rule(:attribute_ref => simple(:name)) { name.to_sym }
 
+      # A JOIN B
+      rule(:join => subtree(:operands)) { operands[:left].join(operands[:right]) }
+
       # FIXME: Create factory classes
       class << self
         private

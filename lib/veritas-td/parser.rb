@@ -64,8 +64,12 @@ module Veritas
       rule(:tuple_component_list) { tuple_component.repeat(0, 1) >> (padded(",") >> tuple_component).repeat }
       rule(:tuple_list)           { tuple.repeat(0, 1) >> (padded(",") >> tuple).repeat }
 
+      # Operations
+      rule(:join_operation) { (relation.as(:left) >> padded(ci_str("JOIN")) >> relation.as(:right)).as(:join) }
+      rule(:operation)      { join_operation }
+
       # Complex expressions
-      rule(:expr) { padded(parenthesized(expr) | relation | unary_expr | binary_expr | scalar) }
+      rule(:expr) { padded(parenthesized(expr) | operation | relation | unary_expr | binary_expr | scalar) }
 
       # Full user input (currently single expressions only)
       rule(:prog) { expr | noop }
