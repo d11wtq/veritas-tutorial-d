@@ -52,7 +52,26 @@ describe "parsing a relation literal" do
     it "returns a relation with the same tuple" do
       result.should == Veritas::Relation.new(
         [ [:ID, Integer], [:NAME, String], Veritas::Attribute::Boolean.new(:ADMIN) ],
-        [ [20,            'Bob',           true                                  ] ]
+        [ [20,            "Bob",           true                                  ] ]
+      )
+    end
+  end
+
+  context "for a multiple-tuple multiple-attribute relation" do
+    let(:expr) do
+      <<-TDQL
+      RELATION { TUPLE { ID 20, NAME 'Bob',              ADMIN TRUE  },
+                 TUPLE { ID 21, NAME 'Jorge d\\'Asissi', ADMIN FALSE } }
+      TDQL
+    end
+
+    it "returns a relation with the same tuples" do
+      result.should == Veritas::Relation.new(
+        [ [:ID, Integer], [:NAME, String],  Veritas::Attribute::Boolean.new(:ADMIN) ],
+        [
+          [20,            "Bob",            true                                  ],
+          [21,            "Jorge d'Asissi", false                                 ]
+        ]
       )
     end
   end

@@ -52,8 +52,11 @@ module Veritas
           table_dum
       end
 
+      # Identifiers
+      rule(:identifier) { match["A-Za-z_"] >> match["a-zA-Z0-9_"].repeat }
+
       # Attributes
-      rule(:attribute_ref) { (match["A-Za-z_"] >> match["a-zA-Z0-9_"].repeat).as(:attribute_ref) }
+      rule(:attribute_ref) { (identifier).as(:attribute_ref) }
 
       # Tuples
       rule(:tuple)                { (ci_str("TUPLE") >> padded("{") >> tuple_component_list >>  padded("}")).as(:tuple) }
@@ -62,10 +65,10 @@ module Veritas
       rule(:tuple_list)           { tuple.repeat(0, 1) >> (padded(",") >> tuple).repeat }
 
       # Complex expressions
-      rule(:expr)      { parenthesized(expr) | padded(relation | unary_expr | binary_expr | scalar) }
+      rule(:expr) { padded(parenthesized(expr) | relation | unary_expr | binary_expr | scalar) }
 
       # Full user input (currently single expressions only)
-      rule(:prog) { noop | expr }
+      rule(:prog) { expr | noop }
 
       # Top-level element is any possible expression
       root(:prog)
