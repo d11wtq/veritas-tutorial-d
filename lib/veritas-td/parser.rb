@@ -23,8 +23,12 @@ module Veritas
       rule(:dq_str)       { str('"') >> dq_str_body >> str('"') }
       rule(:string)       { (sq_str | dq_str).as(:string) }
 
+      rule(:bool_true)    { ci_str("TRUE").as(:true) }
+      rule(:bool_false)   { ci_str("FALSE").as(:false) }
+      rule(:boolean)      { bool_true | bool_false }
+
       # Scalar types
-      rule(:scalar) { int | string }
+      rule(:scalar) { int | string | boolean }
 
       # Unary expressions
       rule(:unary_op)   { padded(str("-").as(:minus) | str("+").as(:plus)) }
@@ -35,14 +39,15 @@ module Veritas
       rule(:subtract)    { (operand.as(:left) >> padded("-") >> expr.as(:right)).as(:subtract) }
       rule(:multiply)    { (operand.as(:left) >> padded("*") >> expr.as(:right)).as(:multiply) }
       rule(:divide)      { (operand.as(:left) >> padded("/") >> expr.as(:right)).as(:divide) }
+      rule(:operand)     { scalar }
+#      rule(:operand)     { scalar | expr } # FIXME: This rule is what is causing 'Stack level too deep', but without such a rule, expressions can't be infinitely nested
       rule(:binary_expr) { multiply | divide | sum | subtract }
-      rule(:operand)     { scalar | expr }
 
       # Relations
       rule(:table_dee) { ci_str("TABLE_DEE").as(:table_dee) }
       rule(:table_dum) { ci_str("TABLE_DUM").as(:table_dum) }
       rule(:relation)  do
-        (ci_str("RELATION") >> padded("{") >> tuple.repeat >> padded("}")).as(:relation) |
+        (ci_str("RELATION") >> padded("{") >> tuple_list >> padded("}")).as(:relation) |
           table_dee |
           table_dum
       end
@@ -51,11 +56,13 @@ module Veritas
       rule(:attribute_ref) { (match["A-Za-z_"] >> match["a-zA-Z0-9_"].repeat).as(:attribute_ref) }
 
       # Tuples
-      rule(:tuple)           { (ci_str("TUPLE") >> padded("{") >> tuple_component.repeat >>  padded("}")).as(:tuple) }
-      rule(:tuple_component) { attribute_ref.as(:name) >> wsp >> expr.as(:value) }
+      rule(:tuple)                { (ci_str("TUPLE") >> padded("{") >> tuple_component_list >>  padded("}")).as(:tuple) }
+      rule(:tuple_component)      { attribute_ref.as(:name) >> wsp >> expr.as(:value) }
+      rule(:tuple_component_list) { tuple_component.repeat(0, 1) >> (padded(",") >> tuple_component).repeat }
+      rule(:tuple_list)           { tuple.repeat(0, 1) >> (padded(",") >> tuple).repeat }
 
       # Complex expressions
-      rule(:expr) { parenthesized(expr) | padded(relation | unary_expr | binary_expr | scalar) }
+      rule(:expr)      { parenthesized(expr) | padded(relation | unary_expr | binary_expr | scalar) }
 
       # Full user input (currently single expressions only)
       rule(:prog) { noop | expr }

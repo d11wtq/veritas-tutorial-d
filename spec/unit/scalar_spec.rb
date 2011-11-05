@@ -26,4 +26,20 @@ describe "evaluating a scalar expression" do
       result.should == 42
     end
   end
+
+  context "with boolean true" do
+    let(:expr) { "TRUE" }
+
+    it "returns true" do
+      result.should == true
+    end
+  end
+
+  context "with boolean false" do
+    let(:expr) { "FALSE" }
+
+    it "returns false" do
+      result.should == false
+    end
+  end
 end

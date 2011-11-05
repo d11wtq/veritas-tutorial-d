@@ -45,4 +45,15 @@ describe "parsing a relation literal" do
       )
     end
   end
+
+  context "for a single-tuple multiple-attribute relation" do
+    let(:expr) { "RELATION { TUPLE { ID 20, NAME 'Bob', ADMIN TRUE } }" }
+
+    it "returns a relation with the same tuple" do
+      result.should == Veritas::Relation.new(
+        [ [:ID, Integer], [:NAME, String], Veritas::Attribute::Boolean.new(:ADMIN) ],
+        [ [20,            'Bob',           true                                  ] ]
+      )
+    end
+  end
 end

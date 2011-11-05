@@ -12,6 +12,10 @@ module Veritas
       rule(:chars => simple(:chars))       { chars }
       rule(:string => sequence(:chunks))   { chunks.join }
 
+      # Booleans
+      rule(:true  => simple(:true))  { true }
+      rule(:false => simple(:false)) { false }
+
       # Logical grouping
       rule(:parenthesized => subtree(:expr)) { expr }
 
@@ -45,23 +49,16 @@ module Veritas
         private
 
         def tuple_header(tuples)
-          tuples.first.collect do |attribute|
-            [attribute[:name], attribute_type(attribute[:value])]
-          end
+          tuples.first.collect { |attr| attribute(attr) }
         end
 
-        def attribute_type(value)
-          case value
-            when Fixnum, Integer
-              Integer
-            else
-              Object # ?
-          end
+        def attribute(attr)
+          Veritas::Attribute.infer_type(attr[:value]).new(attr[:name])
         end
 
         def tuple_set(tuples)
           tuples.collect do |tuple|
-            tuple.collect { |attribute| attribute[:value] }
+            tuple.collect { |attr| attr[:value] }
           end
         end
       end
