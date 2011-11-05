@@ -34,4 +34,15 @@ describe "parsing a relation literal" do
       result.should == Veritas::TABLE_DEE
     end
   end
+
+  context "for a single-tuple single-attribute relation" do
+    let(:expr) { "RELATION { TUPLE { ID 20 } }" }
+
+    it "returns a relation with the same tuple" do
+      result.should == Veritas::Relation.new(
+        [ [:ID, Integer] ],
+        [ [20] ]
+      )
+    end
+  end
 end

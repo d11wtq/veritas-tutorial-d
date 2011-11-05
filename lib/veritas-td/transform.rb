@@ -31,10 +31,40 @@ module Veritas
 
       # RELATION { .. }
       rule(:relation => simple(:empty))   { Veritas::Relation.new([], []) }
-      rule(:relation => subtree(:tuples)) { Veritas::Relation.new([], [tuples]) }
+      rule(:relation => subtree(:tuples)) do |dict|
+        Veritas::Relation.new(tuple_header(dict[:tuples]), tuple_set(dict[:tuples]))
+      end
 
       # TUPLE { .. }
-      rule(:tuple => subtree(:components)) { [] }
+      rule(:tuple => simple(:empty))        { [] }
+      rule(:tuple => subtree(:components))  { components }
+      rule(:attribute_ref => simple(:name)) { name.to_sym }
+
+      # FIXME: Create factory classes
+      class << self
+        private
+
+        def tuple_header(tuples)
+          tuples.first.collect do |attribute|
+            [attribute[:name], attribute_type(attribute[:value])]
+          end
+        end
+
+        def attribute_type(value)
+          case value
+            when Fixnum, Integer
+              Integer
+            else
+              Object # ?
+          end
+        end
+
+        def tuple_set(tuples)
+          tuples.collect do |tuple|
+            tuple.collect { |attribute| attribute[:value] }
+          end
+        end
+      end
     end
   end
 end
