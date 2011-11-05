@@ -29,6 +29,13 @@ module Veritas
       rule(:multiply => { :left => simple(:left), :right => simple(:right) }) { left * right }
       rule(:divide   => { :left => simple(:left), :right => simple(:right) }) { Float(left) / right }
 
+      # All variables
+      rule(:variable => simple(:var)) do
+        key = var.to_s.upcase.to_sym
+        raise "Undefined variable #{var}" unless registry.key?(key)
+        registry[key]
+      end
+
       # TABLE_DEE / TABLE_DUM
       rule(:table_dee => simple(:dee)) { Veritas::TABLE_DEE }
       rule(:table_dum => simple(:dum)) { Veritas::TABLE_DUM }

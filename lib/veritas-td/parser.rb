@@ -68,8 +68,10 @@ module Veritas
       rule(:join_operation) { (relation.as(:left) >> padded(ci_str("JOIN")) >> relation.as(:right)).as(:join) }
       rule(:operation)      { join_operation }
 
+      rule(:variable) { identifier.as(:variable) }
+
       # Complex expressions
-      rule(:expr) { padded(parenthesized(expr) | operation | relation | unary_expr | binary_expr | scalar) }
+      rule(:expr) { padded(parenthesized(expr) | operation | relation | unary_expr | binary_expr | scalar | variable) }
 
       # Full user input (currently single expressions only)
       rule(:prog) { expr | noop }
